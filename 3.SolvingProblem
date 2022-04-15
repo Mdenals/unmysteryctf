@@ -1,0 +1,34 @@
+On va démarrer en faisant quelques recherches classique et on se rend vite compte qu’un fichier de Backup : login.php.old existe.
+Après l’avoir télécharger et analyser on retient deux passages :
+$login2=htmlentities($_POST["login"]);
+$pass2=$_POST["pass2"];
+$dec=$_POST["dec"];
+Télécharger
+ainsi que
+if (isset($dec) && $dec!="") {
+echo "<center><font color=red><h2>Au revoir</h2><br><br></font><center>";
+echo '<script language="javascript" type="text/javascript">
+window.location.replace("");
+</script>';
+} else if (isset($login2) && !empty($login2)) {
+if (base64_encode($pass2) == "YXplcnR5NjU0JiY=") {
+echo "<center><font color=red><h2>Bienvennue $login2</h2><br><br></font>Redirection en cours...<center>";
+echo '<script language="javascript" type="text/javascript">
+window.location.replace("index.php3");
+</script>';
+} else {
+echo '<center><font color="red">login/mot de passe incorrect<br><br></font></center>';
+}
+}
+Télécharger
+Le premier permet de prendre note des paramètres a passez en POST, donc : login & pass2 & dec
+Le second de récupéré un mot de passe en base 64 qui une fois décoder est égale a : azerty654&&
+On va donc maintenant sur la page de login et on essaie de passer notre requête en remplissant avec Nom d’utilisateur = Admin et Mot de Passe = azerty654&&.
+On se rend vite compte que cela ne marche pas, on décide donc d’intercepter notre requête avant son envoie grâce à notre logiciel préféré (Burp, TamperData, ...).
+A partir de ce moment on s’aperçoit qu’au départ la requête est formée de cette manière :
+login=Admin&pass2=azerty654%26%26&mess=Se+connecter
+$Dec n’est donc pas déclarer, il suffit alors de modifier la requête comme cela :
+login=Admin&pass2=azerty654%26%26&mess=Se+connecter&dec=
+Et vous voilà connecter il vous suffit d’attendre la fin de la redirection et
+Bien joue !!!
+Le mot de passe est : 456...
